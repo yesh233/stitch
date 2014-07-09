@@ -1,0 +1,11 @@
+import os
+
+
+jobName = sys.argv[1]
+hostNames = ['Master', 'Slave1']
+hdfsFolder = '/home/mfkiller/stitch/hdfs/'
+
+
+for hostName in hostNames:
+	cleanCommand = ('''ssh %s "rm -rf %s%s"''') % (hostName, hdfsFolder, jobName)
+	os.system(cleanCommand)
