@@ -1,3 +1,4 @@
-/bin
-/logs
-/hdfs
+bin
+logs
+hdfs
+*.py~
