@@ -4,3 +4,4 @@ hdfs/
 input/
 output/
 *.py~
+*.pyc
