@@ -3,5 +3,6 @@ logs/
 hdfs/
 input/
 output/
+tmp/
 *.py~
 *.pyc

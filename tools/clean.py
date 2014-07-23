@@ -2,7 +2,7 @@ import os
 import sys
 
 jobName = sys.argv[1]
-hostNames = ['Master', 'Slave1']
+hostNames = ['Slave1']
 hdfsFolder = '/home/mfkiller/stitch/hdfs/'
 
 

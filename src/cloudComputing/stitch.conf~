@@ -1,0 +1,15 @@
+[cloud]
+jobName = 1
+mapTaskCount = 16
+nx = 4
+ny = 4
+
+[stitch]
+height = 4912
+width = 7360
+scale = 9.2
+sep = 0.005
+zoom = 15
+times = 500
+thread = 0.001
+
