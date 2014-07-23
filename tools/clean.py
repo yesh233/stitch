@@ -4,11 +4,14 @@ import sys
 jobName = sys.argv[1]
 hostNames = ['Slave1']
 hdfsFolder = '/home/mfkiller/stitch/hdfs/'
-
+tmpFolder =  '/home/mfkiller/stitch/tmp/'
 
 for hostName in hostNames:
-	cleanCommand = ('''ssh %s "rm -rf %s%s"''') % (hostName, hdfsFolder, jobName)
-	os.system(cleanCommand)
+    cleanCommand = ('''ssh %s "rm -rf %s%s"''') % (hostName, hdfsFolder, jobName)
+    os.system(cleanCommand)
+    cleanCommand = ('''ssh %s "rm -rf %s%s"''') % (hostName, tmpFolder, jobName)
+    os.system(cleanCommand)
+    
 
 hdfsClean = "$HADOOP_HOME/bin/hadoop fs -rmr " + jobName + "/blocks"
 os.system(hdfsClean)

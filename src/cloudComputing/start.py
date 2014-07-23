@@ -1,4 +1,5 @@
 import os
+import time
 import sys
 from ConfigParser import ConfigParser
 from config import configFileName, coorFileName,adjFileName,bundlersrcFolder,\
@@ -128,6 +129,7 @@ def save_result(jobName, outputdir):
     os.system(command)
   
 def main():
+    print time.localtime(time.time())
     os.chdir(cloudsrcFolder)
     jobName = sys.argv[1]
     mapTaskCount, nx, ny, height, width, scale, sep, zoom, times, \
@@ -136,13 +138,14 @@ def main():
     write_arg_txt(jobName, tmpdir, height, width, scale, sep, zoom, \
                   times, thread)
     tmpimgsdir = make_tmp_imgs_dir(jobName)
-    #imgs_reduce(jobName, tmpimgsdir, scale)
-    #find_adj(jobName) 
-    #bundler(jobName, tmpdir)
-    #put_to_hdfs(jobName, tmpdir)
-    #stitch(jobName, mapTaskCount, nx, ny)
+    imgs_reduce(jobName, tmpimgsdir, scale)
+    find_adj(jobName) 
+    bundler(jobName, tmpdir)
+    put_to_hdfs(jobName, tmpdir)
+    stitch(jobName, mapTaskCount, nx, ny)
     outputdir = make_output_dir(jobName)
     save_result(jobName, outputdir)  
+    print time.localtime(time.time())
 
 if __name__ == '__main__':
     main()
