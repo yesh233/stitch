@@ -124,12 +124,8 @@ def make_output_dir(jobName):
 def save_result(jobName, outputdir):
     command = 'hadoop fs -get '+jobName+'/'+finalFileName+' '+outputdir+'/'
     os.system(command)
-    command = 'convert -rotate -90 ' + outputdir+'/'+finalFileName + ' '+ \
-              outputdir+'/'+finalFileName
-    os.system(command)
   
 def main():
-    print 'start', ctime
     os.chdir(cloudsrcFolder)
     jobName = sys.argv[1]
     mapTaskCount, nx, ny, height, width, scale, sep, zoom, times, \
@@ -138,19 +134,13 @@ def main():
     write_arg_txt(jobName, tmpdir, height, width, scale, sep, zoom, \
                   times, thread)
     tmpimgsdir = make_tmp_imgs_dir(jobName)
-    print 'imgs_reduce & find_adj', ctime
     imgs_reduce(jobName, tmpimgsdir, scale)
     find_adj(jobName) 
-    print 'bundler', ctime
     bundler(jobName, tmpdir)
-    print 'push_to_hdfs', ctime
     put_to_hdfs(jobName, tmpdir)
-    print 'stitch', ctime
     stitch(jobName, mapTaskCount, nx, ny)
     outputdir = make_output_dir(jobName)
-    print 'save_result', ctime
     save_result(jobName, outputdir)  
-    print 'finish', ctime
 
 if __name__ == '__main__':
     main()
