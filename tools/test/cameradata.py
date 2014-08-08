@@ -1,8 +1,7 @@
 import os
 import sys
 from numpy import *
-import cPickle
-import gzip
+import utils
 
 class Camera(object):
     def __init__(self):
@@ -18,6 +17,12 @@ class Camera(object):
     def set_RTK(self, R, T, K):
 	self.__R, self.__T, self.__K = R, T, K
 
+    def spa_to_img(self, pos):
+	X = mat(pos).T
+	X = mat(self.__R)*X
+	X = X + mat(self.__T)
+	X = mat(self.__K)*X
+	return tuple(map(float, X))
 
 class CameraList(object):
     def __init__(self, scale, shape):
@@ -46,21 +51,29 @@ class CameraList(object):
 		c.set_RTK(f(R),f(T),f(K))
 		self.__cameras.append(c)
 
-def saveCameraList(camera_list, path):
-    with gzip.open(path, 'w') as fp:
-	cPickle.dump(camera_list, fp)
+    def spa_to_img(self, idx, pos):
+	x,y,z = self.__cameras[idx].spa_to_img(pos)
+	if z == 0:
+	    return (-1,-1)
+	else :
+	    x,y = -x/z, -y/z
+	    h,w = self.__shape
+	    h,w = h/2,w/2	
+	    if abs(x)+5<w and abs(y)+5<h:
+		x,y = x+w, y+h
+		x,y = 2*h-y, x
+	        return (x,y)
+	    else :
+		return (-1,-1)
+	    
 
-def loadCameraList(path):
-    with gzip.open(path) as fp:
-	return cPickle.load(fp)
 
-	
 def test():
     #camera_list = CameraList(10, (4912,7360))
     #camera_list.read_from_bundle('bundle.out')
     #print camera_list
     #saveCameraList(camera_list, 'camera_list.pkl')
-    C = loadCameraList('camera_list.pkl')
+    C = utils.load('camera_list.pkl')
     print C
 
 

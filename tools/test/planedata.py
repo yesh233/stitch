@@ -1,8 +1,7 @@
 import os
 import sys
 from numpy import *
-import cPickle
-import gzip
+import utils
 
 class Plane(object):
     def __init__(self):
@@ -20,13 +19,11 @@ class Plane(object):
 	    l = map(float, fp.readline().split())
 	    self.__boundings = tuple(l)
 
-def savePlane(plane, path):
-    with gzip.open(path, 'w') as fp:
-	cPickle.dump(plane, fp)
-
-def loadPlane(path):
-    with gzip.open(path) as fp:
-	return cPickle.load(fp)
+    def to_spa(self, pos):
+	x, y = pos
+	A, B, C, D = self.__coeffients
+	z = -(A*x+B*y+D)/C
+	return (x,y,z)
 
 def test():
     B = loadPlane('plane.pkl') 
