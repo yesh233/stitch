@@ -6,3 +6,5 @@ output/
 tmp/
 *.py~
 *.pyc
+*.jpg
+*.pkl

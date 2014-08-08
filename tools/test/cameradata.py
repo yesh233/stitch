@@ -54,19 +54,18 @@ class CameraList(object):
     def spa_to_img(self, idx, pos):
 	x,y,z = self.__cameras[idx].spa_to_img(pos)
 	if z == 0:
-	    return (-1,-1)
+	    return None 
 	else :
 	    x,y = -x/z, -y/z
 	    h,w = self.__shape
 	    h,w = h/2,w/2	
 	    if abs(x)+5<w and abs(y)+5<h:
-		x,y = x+w, y+h
+		x,y = int(x+w), int(y+h)
 		x,y = 2*h-y, x
 	        return (x,y)
 	    else :
-		return (-1,-1)
+		return None 
 	    
-
 
 def test():
     #camera_list = CameraList(10, (4912,7360))
