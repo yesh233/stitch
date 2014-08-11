@@ -50,10 +50,10 @@ class Ret(object):
 
 def test():
     R = Ret()
-    R.prepare('blk/0.pkl','imgs/','camera_list.pkl','plane.pkl')
-    R.scale = 2.0
+    R.prepare('mb.pkl','imgs/','camera_list.pkl','plane.pkl')
+    R.scale = 1.0
     im = Image.fromarray(R.label_ret())
-    print im.save('1.jpg') 
+    im.save('1.jpg') 
 
 if __name__ == '__main__':
     test()

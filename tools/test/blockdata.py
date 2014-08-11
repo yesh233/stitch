@@ -78,7 +78,17 @@ def camera_update(a, b, o):
     return (xmin,ymin,xmax,ymax)
 
 def test():
-    b = [[loa:wq
+    B0 = utils.load('blk/0.pkl')
+    B1 = utils.load('blk/1.pkl')
+    B2 = utils.load('blk/4.pkl')
+    B3 = utils.load('blk/5.pkl')
+    
+    BM = [[B0,B1],[B2,B3]]
+    P = Block()
+    P.merge_from_matrix(BM)
+    utils.save(P, 'mb.pkl')
+    print P
+
 
 
 if __name__ == '__main__':
