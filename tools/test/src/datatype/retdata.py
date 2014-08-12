@@ -50,7 +50,9 @@ class Ret(object):
 
 def test():
     R = Ret()
-    R.prepare('mb.pkl','imgs/','camera_list.pkl','plane.pkl')
+    prefix = '/home/mfkiller/stitch/tools/test/data/'
+    R.prepare(prefix+'blocks/4.pkl',prefix+'imgs/',prefix+'cameralist.pkl',
+	      prefix+'plane.pkl')
     R.scale = 1.0
     im = Image.fromarray(R.label_ret())
     im.save('1.jpg') 
