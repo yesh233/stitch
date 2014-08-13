@@ -1,8 +1,8 @@
 import os
 import sys
-from numpy import *
 from PIL import Image
-import gzip
+import numpy as np
+import copy as cp
 import utils
 from blockdata import *
 from planedata import *
@@ -15,6 +15,11 @@ class Ret(object):
 	self.camera_list = None 
 	self.plane = None
 	self.scale = 1.0
+	self.init_img = None
+	self.ava_img = None
+	self.img = None
+	self.labels = None
+	self.h, self.w = 0, 0
     
     def __str__(self):
 	return ('block:\n'+str(self.block)+'\n'+
@@ -24,38 +29,48 @@ class Ret(object):
     def prepare(self, block_path, imgs_path, camera_list_path, 
 	        plane_path):
 	self.block = utils.load(block_path)
-	for i in self.block.cameras.keys():
-	    self.imgs[i] = array(Image.open(imgs_path +
+	for i in self.block.cameras:
+	    self.imgs[i] = np.array(Image.open(imgs_path +
 		  str(i)+'.jpg'))
 	self.camera_list = utils.load(camera_list_path)
 	self.plane = utils.load(plane_path)
+	self.h, self.w = self.block.height * self.scale, self.block.width*self.scale
+	self.h, self.w = int(self.h), int(self.w)
+	self.labels = cp.deepcopy(self.block.labels)
+	self.img = zeros((self.h,self.w,3),uint8)
 
-    def label_ret(self):
-	assert(self.block != None and self.camera_list != None 
-		and self.plane != None)
-	h, w = self.block.height * self.scale, self.block.width*self.scale
-	h, w = int(h), int(w)
-	ret = zeros((h,w,3),uint8) 
-        for i in range(h): 	
-	    for j in range(w):
-		idx = self.block.labels[i/self.scale,j/self.scale]
+    def img_update(self, box):
+	h0,w0,h1,w1 = box
+	cnt = 0
+        for i in range(h0, h1): 	
+	    for j in range(w0, w1):
+		idx = self.labels[i/self.scale,j/self.scale]
 	        pos = self.block.pos(i,j,self.scale)
 		pos = self.plane.to_spa(pos)
 		pos = self.camera_list.spa_to_img(idx, pos)
 	        if pos != None:
-		    ret[i,j] = self.imgs[idx][pos]
+		    self.img[i,j] = self.imgs[idx][pos]
 		else :
-		    ret[i,j] = zeros(3,uint8)
-        return ret		    
+		    self.img[i,j] = zeros(3,uint8)
+                yield cnt
+		cnt = cnt + 1
+
+
+    def init_img(self):
+	self.labels = copy.deepcopy(self.block.labels)
+	if self.init_img == None:
+	    for i in img_update((0,0,self.h,self.w)):
+	         pass
+	    self.init_img = copy.deepcopy(self.img)
+	    
 
 def test():
     R = Ret()
     prefix = '/home/mfkiller/stitch/tools/test/data/'
     R.prepare(prefix+'blocks/4.pkl',prefix+'imgs/',prefix+'cameralist.pkl',
 	      prefix+'plane.pkl')
-    R.scale = 1.0
-    im = Image.fromarray(R.label_ret())
-    im.save('1.jpg') 
+    #R.scale = 10.0
+    utils.save(R, '../ret.pkl')
 
 if __name__ == '__main__':
     test()
