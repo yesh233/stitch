@@ -39,21 +39,28 @@ class Ret(object):
 	self.labels = cp.deepcopy(self.block.labels)
 	self.img = zeros((self.h,self.w,3),uint8)
 
-    def img_update(self, box):
+    def img_update(self, box, camera = -1):
 	h0,w0,h1,w1 = box
 	cnt = 0
+        print cnt
         for i in range(h0, h1): 	
 	    for j in range(w0, w1):
-		idx = self.labels[i/self.scale,j/self.scale]
-	        pos = self.block.pos(i,j,self.scale)
-		pos = self.plane.to_spa(pos)
-		pos = self.camera_list.spa_to_img(idx, pos)
-	        if pos != None:
-		    self.img[i,j] = self.imgs[idx][pos]
-		else :
-		    self.img[i,j] = zeros(3,uint8)
-                yield cnt
+                ci, cj = i/self.scale, j/self.scale
+                if camera == -1:
+                    #defulat
+                    self.labels[ci,cj] = self.block.labels[ci,cj]
+                    self.img[i,j] = self.init_img[i,j]
+                else :
+                    self.labels[ci,cj] = camera
+                    idx = self.labels[ci,cj]    
+                    pos = self.block.pos(i,j,self.scale)
+		    pos = self.plane.to_spa(pos)
+		    pos = self.camera_list.spa_to_img(idx, pos)
+	            if pos != None:
+		        self.img[i,j] = self.imgs[idx][pos]
+		yield cnt
 		cnt = cnt + 1
+        print cnt
 
 
     def init_img(self):
