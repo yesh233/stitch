@@ -23,9 +23,9 @@ class MainWindow(QMainWindow):
 	self.ret = Ret()  
 
         #layout
-	w = pg.GraphicsView()
+	w = pg.GraphicsView(self)
 	w.setMinimumSize(200,200)
-	centralWidget = QWidget()
+	centralWidget = QWidget(self)
 	vlayout = QVBoxLayout()
 	vlayout.addWidget(w)
 	hlayout = QHBoxLayout()
@@ -41,28 +41,49 @@ class MainWindow(QMainWindow):
 	hlayout.addStretch()
 	self.select_button.setCheckable(True)
 	vlayout.addLayout(hlayout)
-	centralWidget.setLayout(vlayout)
-	self.setCentralWidget(centralWidget)
 
-        #dock
-        cameraDockWidget = QDockWidget('Cameras', self)
-	cameraDockWidget.setObjectName('cameraDockWidget')
-        cameraDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea|
-		Qt.RightDockWidgetArea)
+        hlayout = QHBoxLayout()
+	hlayout.addLayout(vlayout)
+
+	vlayout = QVBoxLayout()
+        cameraGroup = QGroupBox('Cameras', self)
+	boxlayout = QVBoxLayout()
 	self.listWidget = QListWidget()
-	cameraDockWidget.setWidget(self.listWidget)
-	cameraDockWidget.setMinimumWidth(110)
-	cameraDockWidget.setMaximumWidth(110)
-	cameraDockWidget.setContentsMargins(5,5,5,5)
-	self.addDockWidget(Qt.RightDockWidgetArea, cameraDockWidget)
+        self.color_button = QPushButton('show')
+	self.color_button.setCheckable(True)
+	boxlayout.addWidget(self.listWidget)
+        boxlayout.addWidget(self.color_button)	
+	cameraGroup.setLayout(boxlayout)
+	cameraGroup.setMaximumWidth(100)
+	vlayout.addWidget(cameraGroup)
+
+	heightGroup = QGroupBox('Height', self)
+	boxlayout = QVBoxLayout()
+	self.height_thread_edit = QLineEdit(self)
+	self.height_thread_slider = QSlider(Qt.Horizontal,self)
+	boxlayout.addWidget(QLabel('Thread:'))
+	boxlayout.addWidget(self.height_thread_edit)
+	boxlayout.addWidget(self.height_thread_slider)
+	heightGroup.setLayout(boxlayout)
+	heightGroup.setMaximumWidth(100)
+        vlayout.addWidget(heightGroup)
+
+	hlayout.addLayout(vlayout)
+       
+	centralWidget.setLayout(hlayout)
+	self.setCentralWidget(centralWidget)
+	
 
         #viewbox
 	self.view = pg.ViewBox()
 	self.view.setAspectLocked()
 	self.img = myImageItem()
 	self.view.addItem(self.img)
+	self.color = pg.ImageItem()
+	self.view.addItem(self.color)
+
 	w.setCentralItem(self.view)
-         
+	
 	#status bar
 	self.posLabel = QLabel()
 	self.posLabel.setFrameStyle(QFrame.StyledPanel|QFrame.Sunken)
@@ -81,9 +102,16 @@ class MainWindow(QMainWindow):
 	self.select_button.clicked.connect(self.select)
 	update_button.clicked.connect(self.update)
 	self.connect(self.img, SIGNAL('moved'), self.update_pos)
+	self.color_button.clicked.connect(self.show_color)
 
 	self.setWindowTitle('Yesh233')
 	self.setGeometry(500,400,600,500)
+
+    def show_color(self):
+	if self.color_button.isChecked(): 
+	    self.color.setImage(self.ret.color, opacity=0.5)
+	else :
+	    self.color.setImage(np.zeros((1,1,3),uint8), opacity=0)
 
     def update_pos(self, pos):
 	try:
@@ -112,6 +140,7 @@ class MainWindow(QMainWindow):
 	self.ret.prepare(prefix+'blocks/4.pkl',prefix+'imgs/',prefix+'cameralist.pkl',
 		prefix+'plane.pkl')
 	self.ret.img = cp.deepcopy(self.ret.init_img)
+	self.ret.color = zeros((self.ret.h, self.ret.w, 3), uint8)
         self.img.setImage(self.ret.img)
 	print 'prepare finished'
 

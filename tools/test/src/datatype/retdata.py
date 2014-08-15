@@ -18,6 +18,7 @@ class Ret(object):
 	self.init_img = None
 	self.ava_img = None
 	self.img = None
+        self.color = None
 	self.labels = None
 	self.h, self.w = 0, 0
     
@@ -80,6 +81,8 @@ def test():
     utils.save(R, '../ret.pkl')
 
 if __name__ == '__main__':
+    global color
+    color = utils.load('color.pkl')
     test()
 
 
